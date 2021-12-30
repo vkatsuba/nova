@@ -10,7 +10,7 @@ not_found(Req) ->
         <<"application/json">> ->
             %% Render a json response
             Json = #{message => "Resource not found"},
-            {status, 404, #{<<"content-type">> => <<"application/json">>}, json:encode(Json, [maps, binary])};
+            {status, 404, #{<<"content-type">> => <<"application/json">>}, thoas:encode(Json)};
         _ ->
             %% Just assume HTML
             Variables = #{status => "Could not find the page you were looking for",
@@ -32,7 +32,7 @@ server_error(#{crash_info := #{stacktrace := Stacktrace, class := Class, reason 
             %% We do show a proper error response
             case cowboy_req:header(<<"accept">>, Req) of
                 <<"application/json">> ->
-                    {status, 500, #{<<"content-type">> => <<"application/json">>}, json:encode(Variables)};
+                    {status, 500, #{<<"content-type">> => <<"application/json">>}, thoas:encode(Variables)};
                 _ ->
                     {ok, Body} = nova_error_dtl:render(Variables),
                     {status, 500, #{<<"content-type">> => <<"text/html">>}, Body}

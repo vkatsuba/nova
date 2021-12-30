@@ -67,7 +67,7 @@ modulate_state(Req = #{headers := #{<<"content-type">> := <<"application/json", 
             %% First read in the body
             {ok, Data, Req0} = cowboy_req:read_body(Req),
             %% Decode the data
-            JSON = json:decode(Data, [maps, binary]),
+            {ok, JSON} = thoas:decode(Data),
             modulate_state(Req0#{json => JSON}, Tl);
         false ->
             modulate_state(Req#{json => #{}}, Tl)

@@ -32,7 +32,7 @@
                   ModFun :: mod_fun(), Req :: cowboy_req:req()) -> {ok, State :: cowboy_req:req()} |
                                                                    {Module :: atom(), Req :: cowboy_req:req()}.
 handle_json({json, StatusCode, Headers, JSON}, _ModFun, Req) ->
-    try json:encode(JSON, [binary, maps]) of
+    try thoas:encode(JSON) of
         EncodedJSON ->
             Headers0 = maps:merge(#{<<"content-type">> => <<"application/json">>}, Headers),
             Req0 = cowboy_req:set_resp_headers(Headers0, Req),
@@ -121,7 +121,7 @@ handle_status({status, Status, ExtraHeaders, JSON}, _ModFun, Req) when is_map(JS
     Headers0 = maps:merge(#{<<"content-type">> => <<"application/json">>}, ExtraHeaders),
     Req0 = cowboy_req:set_resp_headers(Headers0, Req),
     Req1 = Req0#{resp_status_code => Status},
-    Req2 = cowboy_req:set_resp_body(json:encode(JSON, [binary]), Req1),
+    Req2 = cowboy_req:set_resp_body(thoas:encode(JSON, [binary]), Req1),
     {ok, Req2};
 handle_status({status, Status, ExtraHeaders, Body}, _ModFun, Req) ->
     %% Body is a binary - just send it out
